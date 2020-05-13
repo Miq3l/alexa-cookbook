@@ -4,11 +4,11 @@ const https = require('https');
 const mode = 'dev'; // or 'prod'
 
 
-const clientID = `amzn1.application-oa2-client.274a50e4....`;
+const clientID = `amzn1.application-oa2-client.55d7426d14ea4a7a9bfd2bc53e7fc68b`
 
-const clientSecret = `97a166....`;
+const clientSecret = `3ace16e97329e470621da6dbceb37903c0c569aa6437b6911725143e56874312`
 
-let userId1 = `amzn1.ask.account.AHVVDYK7EA.....`;
+let userId1 = `amzn1.ask.account.AGITLE3HVTEXJMFTFSRGQWIVCIUGOVNXW4DIYYVXRFWQP3RZB2QTKLD2HYSTMRW6JYT3QWYI347K5SPYUIEIYCUFR4JA5A6NI6WASI5YHFZJHWSJXJIRH5FJYROIGTH2ZKJVL2KYYWYUXRBFP27GKJQ27SM4R4OUZSKC5YM3IE4CWBIT2NTEGA3ENMSSCSO4CSY37RDKQ2YAZBA`
 
 
 notify(userId1, 'ORDER', 3); // order shipped, arrives in 3 days

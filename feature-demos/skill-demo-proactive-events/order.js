@@ -24,7 +24,7 @@ async function notify(userId, eventType, message) {
 function getProactiveOptions(token, postLength){
 
     return {
-        hostname: 'api.amazonalexa.com',  // api.eu.amazonalexa.com (Europe) api.fe.amazonalexa.com (Far East)
+        hostname: 'api.eu.amazonalexa.com',  // api.eu.amazonalexa.com (Europe) api.fe.amazonalexa.com (Far East) api.amazonalexa.com (USA)
         port: 443,
         path: '/v1/proactiveEvents/' + (mode && mode === 'prod' ? '' : 'stages/development'),  // mode: global var
         method: 'POST',
@@ -37,7 +37,7 @@ function getProactiveOptions(token, postLength){
 }
 
 function getProactivePostData(eventType, userId, message) {
-    // console.log(`routing ${eventType} ${message}`);
+    console.log(`routing ${eventType} ${message}`);
     switch (eventType) {
         case "ORDER":
             return getOrderStatusEvent(userId, message);
@@ -91,7 +91,7 @@ function getOrderStatusEvent(userId, message) {
                 "sellerName": "Delivery Owl"
             },
             {
-                "locale": "en-GB",
+                "locale": "es-ES",
                 "sellerName": "Delivery Owl UK"
             }
         ],
@@ -141,7 +141,7 @@ function getToken() {
 
             res.on('end', () => {
                 const tokenRequestId = res.headers['x-amzn-requestid'];
-                // console.log(`Token requestId: ${tokenRequestId}`);
+                console.log(`Token requestId: ${tokenRequestId}`);
                 resolve(JSON.parse(returnData).access_token);
             });
         });
@@ -157,16 +157,16 @@ function sendEvent(eventType, token, userId, message) {
     return new Promise(resolve => {
 
         const ProactivePostData = JSON.stringify(getProactivePostData(eventType, userId, message));
-        // console.log(`\nProactivePostData\n${JSON.stringify(JSON.parse(ProactivePostData), null, 2)}\n-----------`);
+        console.log(`\nProactivePostData\n${JSON.stringify(JSON.parse(ProactivePostData), null, 2)}\n-----------`);
 
         const ProactiveOptions = getProactiveOptions(token, ProactivePostData.length);
-        // console.log(`ProactiveOptions\n${JSON.stringify(ProactiveOptions, null, 2)}`);
+        console.log(`ProactiveOptions\n${JSON.stringify(ProactiveOptions, null, 2)}`);
 
         const req = https.request(ProactiveOptions, (res) => {
             res.setEncoding('utf8');
 
             if ([200, 202].includes(res.statusCode)) {
-                // console.log('successfully sent event');
+                console.log('successfully sent event');
                 console.log(`requestId: ${res.headers['x-amzn-requestid']}`);
 
             } else {
@@ -183,7 +183,7 @@ function sendEvent(eventType, token, userId, message) {
             res.on('data', (chunk) => { returnData += chunk; });
 
             res.on('end', () => {
-                //console.log(`return headers: ${JSON.stringify(res.headers, null, 2)}`);
+                console.log(`return headers: ${JSON.stringify(res.headers, null, 2)}`);
                 resolve(`sent event ${eventType}`);
             });
         });

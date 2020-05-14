@@ -5,9 +5,10 @@ const fs = require('fs');
 
 const mode = 'dev'; // or 'prod'
 
-const clientID = `amzn1.application-oa2-client.72677....`;
+const clientID = `amzn1.application-oa2-client.55d7426d14ea4a7a9bfd2bc53e7fc68b`
 
-const clientSecret = `39ea4....`;
+const clientSecret = `3ace16e97329e470621da6dbceb37903c0c569aa6437b6911725143e56874312`
+
 
 const nextEvent = getNextEvent('./skill/lambda/custom/schedule.txt');
 
@@ -29,7 +30,7 @@ async function notify(mediaEventName, mediaEventTime, mediaEventProvider) {
 function getProactiveOptions(token, postLength){
 
     return {
-        hostname: 'api.amazonalexa.com',  // api.eu.amazonalexa.com (Europe) api.fe.amazonalexa.com (Far East)
+        hostname: 'api.eu.amazonalexa.com',  // api.eu.amazonalexa.com (Europe) api.fe.amazonalexa.com (Far East) api.amazonalexa.com (USA)
         port: 443,
         path: '/v1/proactiveEvents/' + (mode && mode === 'prod' ? '' : 'stages/development'),  // mode: global var
         method: 'POST',
@@ -79,7 +80,7 @@ function getMediaEvent(mediaEventName, mediaEventTime, mediaEventProvider) {
                 "contentName": mediaEventName
             },
             {
-                "locale": "en-GB",
+                "locale": "es-ES",
                 "providerName": mediaEventProvider,
                 "contentName": mediaEventName
             }
@@ -89,7 +90,7 @@ function getMediaEvent(mediaEventName, mediaEventTime, mediaEventProvider) {
             "payload": {}
         }
     };
-    // console.log(JSON.stringify(eventJson, null, 2));
+    console.log(JSON.stringify(eventJson, null, 2));
     return eventJson;
 
 }
@@ -126,7 +127,7 @@ function getToken() {
 
             res.on('end', () => {
                 const tokenRequestId = res.headers['x-amzn-requestid'];
-                // console.log(`Token requestId: ${tokenRequestId}`);
+                console.log(`Token requestId: ${tokenRequestId}`);
                 resolve(JSON.parse(returnData).access_token);
             });
         });
@@ -144,22 +145,23 @@ function sendEvent(token, mediaEventName, mediaEventTime, mediaEventProvider) {
         // const ProactivePostData = JSON.stringify(getProactivePostData(eventType, userId, message));
         const ProactivePostData = JSON.stringify(getMediaEvent(mediaEventName, mediaEventTime, mediaEventProvider));
 
-        // console.log(`\nProactivePostData\n${JSON.stringify(JSON.parse(ProactivePostData), null, 2)}\n-----------`);
+        console.log(`\nProactivePostData\n${JSON.stringify(JSON.parse(ProactivePostData), null, 2)}\n-----------`);
 
         const ProactiveOptions = getProactiveOptions(token, ProactivePostData.length);
-        // console.log(`ProactiveOptions\n${JSON.stringify(ProactiveOptions, null, 2)}`);
+        console.log(`ProactiveOptions\n${JSON.stringify(ProactiveOptions, null, 2)}`);
 
         const req = https.request(ProactiveOptions, (res) => {
             res.setEncoding('utf8');
 
             if ([200, 202].includes(res.statusCode)) {
-                // console.log('successfully sent event');
-                // console.log(`requestId: ${res.headers['x-amzn-requestid']}`);
+                console.log('successfully sent event');
+                console.log(`requestId: ${res.headers['x-amzn-requestid']}`);
 
             } else {
 
-                console.log(`Error https response: ${res.statusCode}`);
-                console.log(`requestId: ${res.headers['x-amzn-requestid']}`);
+                console.log(`Error https response: ${res.statusCode}`)
+                console.log(`Error https response: ${res.statusCode.type}`)
+                console.log(`requestId: ${res.headers['x-amzn-requestid']}`)
 
                 if ([403].includes(res.statusCode)) {
                     resolve(`error ${res.statusCode}`);
@@ -172,8 +174,8 @@ function sendEvent(token, mediaEventName, mediaEventTime, mediaEventProvider) {
 
             res.on('end', () => {
                 const requestId = res.headers['x-amzn-requestid'];
-                // console.log(`requestId: ${requestId}`);
-                //console.log(`return headers: ${JSON.stringify(res.headers, null, 2)}`);
+                 console.log(`requestId: ${requestId}`);
+                console.log(`return headers: ${JSON.stringify(res.headers, null, 2)}`);
                 resolve(`sent event ${mediaEventName}`);
             });
         });
